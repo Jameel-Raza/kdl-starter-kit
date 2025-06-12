@@ -254,6 +254,7 @@ exports.Prisma.ProjectsScalarFieldEnum = {
   description: 'description',
   pdf_attachment: 'pdf_attachment',
   estimated_budget: 'estimated_budget',
+  status: 'status',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -272,7 +273,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  PENDING: 'PENDING',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
 
 exports.Prisma.ModelName = {
   cms: 'cms',

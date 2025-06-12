@@ -74,6 +74,13 @@ export default function MobileMenu() {
             Contact
           </Link>
           <Link
+            href="/submit-project"
+            className="block text-black hover:text-blue-600 transition-colors font-500 mb-2"
+            onClick={toggleMenu}
+          >
+            Submit Project Idea
+          </Link>
+          <Link
             href="/admin/login"
             className="block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             onClick={toggleMenu}

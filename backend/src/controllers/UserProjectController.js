@@ -20,13 +20,13 @@ export const submitProject = async (req, res) => {
     console.log('Prisma client instantiated in submitProject:', prisma);
     console.log('Prisma.projects in submitProject:', prisma.projects);
     try {
-        const { name, project_description, estimated_budget } = req.body;
+        const { name, description, estimated_budget } = req.body;
         const pdf_attachment = req.file ? `/uploads/${req.file.filename}` : null;
 
         const newProject = await prisma.projects.create({
             data: {
                 name,
-                project_description,
+                description,
                 estimated_budget: estimated_budget,
                 pdf_attachment,
             },

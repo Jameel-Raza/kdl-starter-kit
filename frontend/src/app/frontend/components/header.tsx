@@ -45,6 +45,9 @@ export default function Header() {
           <Link href="/contact" className="text-black hover:text-blue-600 transition-colors font-500">
             Contact
           </Link>
+          <Link href="/submit-project" className="text-black hover:text-blue-600 transition-colors font-500">
+            Submit Project Idea
+          </Link>
         </nav>
 
         {/* Contact Us Button (Desktop) */}

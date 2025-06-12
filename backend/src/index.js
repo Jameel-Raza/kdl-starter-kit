@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import fs from "fs";
 
 import cmsRoutes from "./routes/cmsRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -36,12 +37,26 @@ app.set('socketio', io);
 // Get __dirname equivalent in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+console.log('__dirname:', __dirname);
+
+// Create uploads directory if it doesn't exist
+const uploadsBasePath = path.join(__dirname, '..', 'uploads');
+const projectUploadsPath = path.join(uploadsBasePath, 'projects');
+
+if (!fs.existsSync(uploadsBasePath)) {
+  fs.mkdirSync(uploadsBasePath, { recursive: true });
+}
+if (!fs.existsSync(projectUploadsPath)) {
+  fs.mkdirSync(projectUploadsPath, { recursive: true });
+}
 
 // Middleware
 app.use(cors());
 
 // Static file serving for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadsPath = path.join(__dirname, '..', 'uploads');
+console.log('Serving static files from:', uploadsPath);
+app.use('/uploads', express.static(uploadsPath));
 
 // Routes
 app.get("/", (req, res) => {

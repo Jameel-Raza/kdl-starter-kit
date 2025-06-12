@@ -12,7 +12,9 @@ const serializeBigInt = (obj) => {
 
 // Get all clients
 export const getProjectsList = async (req, res) => {
-  const projectsList = await prisma.projects.findMany();
+  const { status } = req.query;
+  const where = status ? { status: status.toUpperCase() } : {};
+  const projectsList = await prisma.projects.findMany({ where });
   res.json(serializeBigInt(projectsList));
 };
 
@@ -34,8 +36,14 @@ export const getProjectsById = async (req, res) => {
 
 // Create client entry
 export const createProject = async (req, res) => {
-  const { name, description, pdf_attachment, estimated_budget } = req.body;
-  const project = await prisma.projects.create({ data: { name, description, pdf_attachment, estimated_budget } });
+  const { name, description, estimated_budget, status } = req.body;
+  let pdf_attachment = req.body.pdf_attachment || null;
+
+  if (req.file) {
+    pdf_attachment = `/uploads/projects/${req.file.filename}`;
+  }
+
+  const project = await prisma.projects.create({ data: { name, description, pdf_attachment, estimated_budget, status: status || 'PENDING' } });
   const io = req.app.get('socketio');
   io.emit('project:created', serializeBigInt(project));
   res.status(201).json(serializeBigInt(project));
@@ -44,10 +52,16 @@ export const createProject = async (req, res) => {
 // Update project entry
 export const updateProject = async (req, res) => {
   const { id } = req.params;
-  const { name, description, pdf_attachment, estimated_budget } = req.body;
+  const { name, description, estimated_budget, status } = req.body;
+  let pdf_attachment = req.body.pdf_attachment || null;
+
+  if (req.file) {
+    pdf_attachment = `/uploads/projects/${req.file.filename}`;
+  }
+
   const project = await prisma.projects.update({
     where: { id: BigInt(id) },
-    data: { name, description, pdf_attachment, estimated_budget },
+    data: { name, description, pdf_attachment, estimated_budget, status },
   });
   const io = req.app.get('socketio');
   io.emit('project:updated', serializeBigInt(project));

@@ -165,12 +165,20 @@ model settings {
 }
 
 model Projects {
-  id               BigInt   @id @default(autoincrement())
+  id               BigInt        @id @default(autoincrement())
   name             String
   value            String?
   description      String?
   pdf_attachment   String?
   estimated_budget String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now())
+  status           ProjectStatus @default(PENDING)
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @default(now())
+}
+
+enum ProjectStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
 }
