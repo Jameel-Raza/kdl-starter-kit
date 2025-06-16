@@ -16,50 +16,43 @@ export default function AdminLogin() {
   // 🔁 Redirect to dashboard if already logged in
   useEffect(() => {
     if (isLoggedIn) {
-      router.replace('/admin/dashboard');
+      router.replace('/admin/dashboard'); // Default redirect for already logged-in users
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const DUMMY_EMAIL = 'admin@admin.com';
-    const DUMMY_PASSWORD = 'admin123';
-
     try {
-      if (email === DUMMY_EMAIL && password === DUMMY_PASSWORD) {
-        login(); // ✅ Set Zustand login state
-        router.push('/admin/dashboard');
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) throw new Error('Failed to fetch users');
-
-      const users = await response.json();
-      const user = users.find((u: any) => u.email === email);
-
-      if (!user) {
-        setError('Email not found');
-        return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        setError('Incorrect password');
-        return;
+      const data = await response.json();
+      console.log('Login successful:', data);
+
+      // Check user role before proceeding
+      if (data.user.role !== 'ADMIN') {
+        setError('Please use the User login page to access your account.');
+        return; // Stop here and don't proceed with login
       }
 
-      login(); // ✅ Set Zustand login state
+      login(data.user); // Only login if user is admin
       router.push('/admin/dashboard');
-    } catch (err) {
-      setError('An error occurred. Please try again later.');
-      console.error(err);
+
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during login. Please try again later.');
+      console.error('Login error:', err);
     }
   };
 
@@ -68,7 +61,7 @@ export default function AdminLogin() {
       <div className="relative bg-white bg-opacity-90 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-500 hover:scale-105 animate-fade-in">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-2xl"></div>
         <h1 className="text-3xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-          Admin Portal
+          Admin Portal Login
         </h1>
         {error && (
           <div className="text-red-500 text-sm text-center mb-4 bg-red-100 p-2 rounded-md animate-pulse">

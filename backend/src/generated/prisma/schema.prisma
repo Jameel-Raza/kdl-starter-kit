@@ -44,9 +44,10 @@ model users {
   id         BigInt   @id @default(autoincrement())
   name       String
   mobile     String
-  email      String
+  email      String   @unique
   password   String
   address    String?
+  role       UserRole @default(USER)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
@@ -181,4 +182,9 @@ enum ProjectStatus {
   UNDER_REVIEW
   APPROVED
   REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

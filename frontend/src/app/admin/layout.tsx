@@ -22,22 +22,36 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { settings, loading } = useSettings();
 
-  const { isLoggedIn } = useAuthStore(); // ✅ Zustand store
+  const { isLoggedIn, user } = useAuthStore(); // Get user data from store
   const router = useRouter();
 
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  // ✅ Redirect if already logged in and trying to access /admin/login
+  // Add role-based protection
   useEffect(() => {
-    if (isLoginPage && isLoggedIn) {
+    if (!isLoginPage) {
+      if (!isLoggedIn) {
+        // Not logged in, redirect to login
+        router.replace('/admin/login');
+      } else if (user?.role !== 'ADMIN') {
+        // Logged in but not admin, redirect to home
+        router.replace('/');
+      }
+    } else if (isLoginPage && isLoggedIn && user?.role === 'ADMIN') {
+      // Already logged in as admin, redirect to dashboard
       router.replace('/admin/dashboard');
     }
-  }, [isLoginPage, isLoggedIn]);
+  }, [isLoginPage, isLoggedIn, user?.role, router]);
 
   if (isLoginPage) {
     return <>{children}</>;
+  }
+
+  // Don't render admin layout for non-admin users
+  if (!isLoggedIn || user?.role !== 'ADMIN') {
+    return null;
   }
 
   return (

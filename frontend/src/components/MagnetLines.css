@@ -1,0 +1,19 @@
+.magnetLines-container {
+  position: fixed !important; /* Use fixed to ensure it's not affected by parent layout */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important; /* Center it on the screen */
+  width: 400px !important; /* Force a visible width */
+  height: 400px !important; /* Force a visible height */
+  border: 5px solid red !important; /* Make it unmissable */
+  overflow: hidden !important;
+  z-index: 9999 !important; /* Bring to front */
+}
+
+.magnetLines-container span {
+  display: block;
+  position: relative;
+  /* Use CSS variables for rotation */
+  transform-origin: center;
+  transition: transform 0.1s ease-out; /* Smooth transition for rotation */
+} 

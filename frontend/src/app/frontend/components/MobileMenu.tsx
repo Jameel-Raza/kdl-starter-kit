@@ -2,10 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuthStore } from '../../../stores/authstore';
+import { useRouter } from 'next/navigation';
 
 export default function MobileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const { isLoggedIn, user, logout } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -17,6 +21,12 @@ export default function MobileMenu() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+    setIsMenuOpen(false);
   };
 
   return (
@@ -80,13 +90,41 @@ export default function MobileMenu() {
           >
             Submit Project Idea
           </Link>
-          <Link
-            href="/admin/login"
-            className="block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-            onClick={toggleMenu}
-          >
-            Login
-          </Link>
+
+          {!isLoggedIn ? (
+            <>
+              <Link
+                href="/register"
+                className="block bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-colors mb-2"
+                onClick={toggleMenu}
+              >
+                Register
+              </Link>
+              <Link
+                href="/admin/login"
+                className="block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors mb-2"
+                onClick={toggleMenu}
+              >
+                Admin Login
+              </Link>
+              <Link
+                href="/login"
+                className="block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                onClick={toggleMenu}
+              >
+                User Login
+              </Link>
+            </>
+          ) : (
+            user?.role === 'USER' && (
+              <button
+                onClick={handleLogout}
+                className="block bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+              >
+                Logout
+              </button>
+            )
+          )}
         </nav>
       )}
     </>

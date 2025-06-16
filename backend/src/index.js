@@ -52,11 +52,18 @@ if (!fs.existsSync(projectUploadsPath)) {
 
 // Middleware
 app.use(cors());
+app.use(express.json());
 
 // Static file serving for uploads
 const uploadsPath = path.join(__dirname, '..', 'uploads');
 console.log('Serving static files from:', uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -75,9 +82,6 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/userProjects", userProjectRoutes);
-
-// Use built-in JSON parser after routes that handle multipart/form-data
-app.use(express.json());
 
 // 404 handler
 app.use((req, res) => {
