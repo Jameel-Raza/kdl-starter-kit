@@ -19,8 +19,14 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import userProjectRoutes from "./routes/UserProjectRoutes.js";
+import assistantRoutes from "./routes/assistantRoutes.js";
 
-dotenv.config();
+// Get __dirname equivalent in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+console.log('GEMINI_API_KEY from process.env:', process.env.GEMINI_API_KEY);
 
 const app = express();
 const httpServer = createServer(app);
@@ -33,11 +39,6 @@ const io = new Server(httpServer, {
 
 // Pass io instance to controllers (optional, but good practice)
 app.set('socketio', io);
-
-// Get __dirname equivalent in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-console.log('__dirname:', __dirname);
 
 // Create uploads directory if it doesn't exist
 const uploadsBasePath = path.join(__dirname, '..', 'uploads');
@@ -82,6 +83,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/userProjects", userProjectRoutes);
+app.use("/api/assistant", assistantRoutes);
 
 // 404 handler
 app.use((req, res) => {

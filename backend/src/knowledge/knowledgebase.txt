@@ -1,0 +1,1 @@
+ kdl starter kit is modular for generic and AI based development

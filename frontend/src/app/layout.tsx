@@ -3,6 +3,7 @@ import { Roboto_Condensed } from "next/font/google";
 import { metadata as frontendMetadata } from "./frontend/metadata";
 import "./globals.css";
 import { ToastProvider } from "@/providers/toast-provider";
+import AssistantDrawer from "@/components/ui/AssistantDrawer";
 
 const robotoCondensed = Roboto_Condensed({ subsets: ["latin"], weight: ["300", "400", "700"] });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body className={`${robotoCondensed.className} antialiased`}>
         <ToastProvider>
           {children}
+          <AssistantDrawer />
         </ToastProvider>
       </body>
     </html>

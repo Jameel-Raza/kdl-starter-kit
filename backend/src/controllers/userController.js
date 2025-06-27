@@ -1,5 +1,6 @@
 import { PrismaClient } from '../generated/prisma/index.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -71,4 +72,54 @@ export const deleteUser = async (req, res) => {
     where: { id: BigInt(id) },
   });
   res.status(204).send();
+};
+
+// Login User
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await prisma.users.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id.toString(), role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token, user: serializeBigInt(user) });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get users with roles
+export const getUsersWithRoles = async (req, res) => {
+  try {
+    const users = await prisma.users.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        mobile: true,
+        address: true,
+        role: true, // Include the role
+        created_at: true,
+        updated_at: true,
+      },
+    });
+    res.json(serializeBigInt(users));
+  } catch (error) {
+    console.error('Error fetching users with roles:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
